@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/constraintLayout"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ui.main.PlaceholderFragment">
+
+    <ImageButton
+        android:id="@+id/audioup"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="58dp"
+        android:background="@drawable/arrowup"
+        android:scaleType="fitCenter"
+        app:layout_constraintBottom_toTopOf="@+id/Audio"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <ImageButton
+        android:id="@+id/audiodown"
+        android:layout_width="50dp"
+        android:layout_height="50dp"
+        android:layout_marginStart="58dp"
+        android:background="@drawable/arrowdown"
+        android:scaleType="fitCenter"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Audio" />
+
+    <ImageButton
+        android:id="@+id/Projector"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:layout_marginStart="8dp"
+        android:layout_marginTop="40dp"
+        android:layout_marginEnd="8dp"
+        android:background="@drawable/projectoroff"
+        android:scaleType="centerInside"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageButton
+        android:id="@+id/Audio"
+        android:layout_width="105dp"
+        android:layout_height="105dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="55dp"
+        android:background="@drawable/musicoff"
+        android:scaleType="centerInside"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Projector" />
+
+    <ImageButton
+        android:id="@+id/Lights"
+        android:layout_width="105dp"
+        android:layout_height="92dp"
+        android:layout_marginTop="62dp"
+        android:layout_marginEnd="30dp"
+        android:background="@drawable/lightbulboff"
+        android:scaleType="fitCenter"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/Projector" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
