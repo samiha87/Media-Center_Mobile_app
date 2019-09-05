@@ -37,7 +37,7 @@ public class PlaceholderFragment extends Fragment {
     public  View mRoot = null;
     private OnListFragmentInteractionListener mListener;
     private final static String TAG = "PlaceholderFragment";
-
+    private String bleBuffer = "";
     private ImageButton projButton = null;
     private ImageButton audioButton = null;
     private ImageButton audioButtonUp = null;
@@ -127,13 +127,6 @@ public class PlaceholderFragment extends Fragment {
             public void onClick(View view) {
                 if(audioState == 0) return;
                 mListener.onButtonPressed("#Audio,Vol,Up*");
-                audioButtonUp.setMaxWidth(audioButton.getMaxWidth() + 10);
-                audioButtonUp.setMaxHeight(audioButton.getMaxHeight() + 10);
-                
-                SystemClock.sleep(10);
-                audioButtonUp.setMaxWidth(audioButton.getMaxWidth() - 10);
-                audioButtonUp.setMaxHeight(audioButton.getMaxHeight() - 10);
-
             }
         });
 
@@ -142,11 +135,6 @@ public class PlaceholderFragment extends Fragment {
             public void onClick(View view) {
                 if(audioState == 0) return;
                 mListener.onButtonPressed("#Audio,Vol,Down*");
-                audioButtonDown.setMaxWidth(audioButtonDown.getMaxWidth() + 10);
-                audioButtonDown.setMaxHeight(audioButtonDown.getMaxHeight() + 10);
-                SystemClock.sleep(10);
-                audioButtonDown.setMaxWidth(audioButtonDown.getMaxWidth() - 10);
-                audioButtonDown.setMaxHeight(audioButtonDown.getMaxHeight() - 10);
             }
         });
 
@@ -196,6 +184,7 @@ public class PlaceholderFragment extends Fragment {
 
     private void updateAudioState() {
         // If audio through projector
+        Log.d(TAG, "updateAudioState: ");
         if(projState == 0) {
            audioState = 0;
         } else if (projState == 1) {
@@ -211,44 +200,65 @@ public class PlaceholderFragment extends Fragment {
             audioButtonUp.setBackgroundResource(R.drawable.arrowup);
             audioButtonDown.setBackgroundResource(R.drawable.arrowdown);
         }
+        // If audi not On, no point procesing any states
         if(audioState == 0) return;
+        // Set mute
         if (audioMute == 1) {
-            audioButton.setBackgroundResource(R.drawable.musicon);
+            audioButton.setBackgroundResource(R.drawable.mute);
         } else {
-            audioButton.setBackgroundResource(R.drawable.musicoff);
+            Log.d(TAG, "Updating volume " + String.valueOf(audioVol));
+            if(audioVol >= 100) {
+                audioButton.setBackgroundResource(R.drawable.musiconvol5);
+            } else if(audioVol >= 70 ) {
+                audioButton.setBackgroundResource(R.drawable.musiconvol4);
+            } else if(audioVol >= 50) {
+                audioButton.setBackgroundResource(R.drawable.musiconvol3);
+            } else if(audioVol >= 30) {
+                audioButton.setBackgroundResource(R.drawable.musiconvol2);
+            } else if(audioVol >=16) {
+                audioButton.setBackgroundResource(R.drawable.musiconvol1);
+            } else {
+                audioButton.setBackgroundResource(R.drawable.musiconvol0);
+            }
         }
+
     }
     private void updateLightsState() {
         if (audioState == 1) {
-            audioButton.setBackgroundResource(R.drawable.musicon);
+            //audioButton.setBackgroundResource(R.drawable.musicon);
         } else {
-            audioButton.setBackgroundResource(R.drawable.musicoff);
+           // audioButton.setBackgroundResource(R.drawable.musicoff);
         }
     }
 
     public void bleData(String data) {
-        if(data.contains("Proj")) {
+
+        // Detect message
+        bleBuffer += (data);
+        if(!bleBuffer.contains("#") || !bleBuffer.contains("*")) return;
+        Log.d(TAG, "bleData " + bleBuffer);
+        if(bleBuffer.contains("Proj")) {
             Log.d(TAG, "bleData: Projector");
-            if(data.contains("Pwr")) {
-                data = data.replace("#r,Proj,Pwr,", "");
-                if(data.charAt(0) == '1') {
+            if (bleBuffer.contains("Pwr")) {
+                bleBuffer = bleBuffer.replace("#r,Proj,Pwr,", "");
+                if (bleBuffer.charAt(0) == '1') {
                     Log.d(TAG, "bleData: Projector: on");
                     projState = 1;
 
-                } else if(data.charAt(0) =='0' ) {
+                } else if (bleBuffer.charAt(0) == '0') {
                     Log.d(TAG, "bleData: Projector: off");
                     projState = 0;
                     // If audio control from projector
                     audioState = 0;
                 }
             }
+        }
+        if(bleBuffer.contains("Audio")) {
+            bleBuffer = bleBuffer.replace("#r,Audio,,", "");
 
-            if(data.contains("Aud")) {
-                data = data.replace("#r,Aud,", "");
-
-                if(data.contains("Pwr")) {
-                    data = data.replace("Pwr,", "");
-                    if (data.charAt(0) == '1') {
+                if(bleBuffer.contains("Pwr")) {
+                    bleBuffer = bleBuffer.replace("Pwr,", "");
+                    if (bleBuffer.charAt(0) == '1') {
                         Log.d(TAG, "bleData: Audio: on");
                         // In case audio from projector
 
@@ -260,27 +270,28 @@ public class PlaceholderFragment extends Fragment {
                     }
                 }
 
-                if(data.contains("Mute")) {
-                    data = data.replace("Mute,", "");
-                    if (data.charAt(0) == '1') {
-                        Log.d(TAG, "bleData: Audio Mute: on");
-                        // In case audio from projector
-                        audioMute = 1;
-
-                    } else if (data.charAt(0) == '0') {
-                        Log.d(TAG, "bleData: Audio Mute: off");
-                        audioMute = 0;
-                    }
+                if(bleBuffer.contains("Mute=On")) {
+                    Log.d(TAG, "bleData: Audio Mute: on");
+                    audioMute = 1;
                 }
 
-                if(data.contains("Vol")) {
-                    data = data.replace("Vol,", "");
-                    data = data.replace("\r", "2");
-                    audioVol = Integer.valueOf(data);
+                if(bleBuffer.contains("Mute=Off")) {
+                    Log.d(TAG, "bleData: Audio Mute: off");
+                    audioMute = 0;
+                }
+
+                if(bleBuffer.contains("Level=")) {
+                    String parse = bleBuffer.substring(bleBuffer.indexOf("Level"));
+                    Log.d(TAG, "bleData: Volume level " + String.valueOf(parse));
+                    parse = parse.substring(parse.indexOf("="));
+                    Log.d(TAG, "bleData: Volume level " + String.valueOf(parse));
+                    String volume = parse.substring(1, parse.indexOf(","));
+                    audioVol = Integer.valueOf(volume);
+                    Log.d(TAG, "bleData: Volume level " + String.valueOf(audioVol));
                 }
 
             }
-        }
+        bleBuffer = "";
     }
 
     /**
