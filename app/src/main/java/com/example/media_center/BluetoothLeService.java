@@ -302,8 +302,9 @@ public class BluetoothLeService extends Service {
         // This is specific to Heart Rate Measurement.
         if (UUID_HM_RX_TX.equals(characteristic.getUuid())) {
             BluetoothGattDescriptor descriptor = null;
-            if(characteristic!= null) descriptor = characteristic.getDescriptor(UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
-            if(descriptor != null) descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
+            if(characteristic != null) descriptor = characteristic.getDescriptor(UUID.fromString(SampleGattAttributes.CLIENT_CHARACTERISTIC_CONFIG));
+            if(descriptor == null) return;
+            descriptor.setValue(BluetoothGattDescriptor.ENABLE_NOTIFICATION_VALUE);
             if(mBluetoothGatt != null)mBluetoothGatt.writeDescriptor(descriptor);
         }
     }

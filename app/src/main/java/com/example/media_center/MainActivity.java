@@ -318,6 +318,7 @@ public class MainActivity extends AppCompatActivity implements PlaceholderFragme
                 for (BluetoothGattService serv: gatt.getServices()) {
                     Log.d(TAG, "onServicesDiscovered: Services " + serv.getUuid());
                 }
+                // Get transfer service from services
                 mCommunicationService = gatt.getService(UUID.fromString("0000ffe0-0000-1000-8000-00805f9b34fb"));
                 for (BluetoothGattCharacteristic characteristic: mCommunicationService.getCharacteristics()) {
                     Log.d(TAG, "onServicesDiscovered: Discovering characteristic" + characteristic.getUuid());

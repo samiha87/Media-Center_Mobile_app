@@ -3,11 +3,13 @@ package com.example.media_center.ui.main;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.SystemClock;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.Nullable;
@@ -109,12 +111,12 @@ public class PlaceholderFragment extends Fragment {
                 if (audioState == 0) {
                     audioState = 1;
                     audioButton.setBackgroundResource(R.drawable.musicon);
-                    if(projState == 1) mListener.onButtonPressed("#Audio,Mute,On*");
+                    if(projState == 1) mListener.onButtonPressed("#Audio,Vol,Mute,On*");
                     else mListener.onButtonPressed("#Audio,Pwr,On*");
                 } else {
                     audioState = 0;
                     audioButton.setBackgroundResource(R.drawable.musicoff);
-                    if(projState == 1) mListener.onButtonPressed("#Audio,Mute,Off*");
+                    if(projState == 1) mListener.onButtonPressed("#Audio,Vol,Mute,Off*");
                     else mListener.onButtonPressed("#Audio,Pwr,Off*");
                 }
             }
@@ -125,6 +127,13 @@ public class PlaceholderFragment extends Fragment {
             public void onClick(View view) {
                 if(audioState == 0) return;
                 mListener.onButtonPressed("#Audio,Vol,Up*");
+                audioButtonUp.setMaxWidth(audioButton.getMaxWidth() + 10);
+                audioButtonUp.setMaxHeight(audioButton.getMaxHeight() + 10);
+                
+                SystemClock.sleep(10);
+                audioButtonUp.setMaxWidth(audioButton.getMaxWidth() - 10);
+                audioButtonUp.setMaxHeight(audioButton.getMaxHeight() - 10);
+
             }
         });
 
@@ -133,7 +142,11 @@ public class PlaceholderFragment extends Fragment {
             public void onClick(View view) {
                 if(audioState == 0) return;
                 mListener.onButtonPressed("#Audio,Vol,Down*");
-
+                audioButtonDown.setMaxWidth(audioButtonDown.getMaxWidth() + 10);
+                audioButtonDown.setMaxHeight(audioButtonDown.getMaxHeight() + 10);
+                SystemClock.sleep(10);
+                audioButtonDown.setMaxWidth(audioButtonDown.getMaxWidth() - 10);
+                audioButtonDown.setMaxHeight(audioButtonDown.getMaxHeight() - 10);
             }
         });
 
